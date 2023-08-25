@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Pathfinding;
+using System.Collections;
 using UnityEngine;
-using Pathfinding;
 
 public class EnemyAI : MonoBehaviour
 {
@@ -11,7 +10,7 @@ public class EnemyAI : MonoBehaviour
     public float pathUpdateSeconds = 0.5f;
 
     [Header("Physics")]
-    public float speed = 200f;
+    public float speed = 200f, jumpForce = 100f;
     public float nextWaypointDistance = 3f;
     public float jumpNodeHeightRequirement = 0.8f;
     public float jumpModifier = 0.3f;
@@ -19,19 +18,25 @@ public class EnemyAI : MonoBehaviour
 
     [Header("Custom Behavior")]
     public bool followEnabled = true;
-    public bool jumpEnabled = true;
+    public bool jumpEnabled = true, isJumping, isInAir;
     public bool directionLookEnabled = true;
+
+    [SerializeField] Vector3 startOffset;
 
     private Path path;
     private int currentWaypoint = 0;
-    RaycastHit2D isGrounded;
+    [SerializeField] public RaycastHit2D isGrounded;
     Seeker seeker;
     Rigidbody2D rb;
+    private bool isOnCoolDown;
 
     public void Start()
     {
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
+        isJumping = false;
+        isInAir = false;
+        isOnCoolDown = false; 
 
         InvokeRepeating("UpdatePath", 0f, pathUpdateSeconds);
     }
@@ -66,24 +71,37 @@ public class EnemyAI : MonoBehaviour
         }
 
         // See if colliding with anything
-        Vector3 startOffset = transform.position - new Vector3(0f, GetComponent<Collider2D>().bounds.extents.y + jumpCheckOffset);
+        startOffset = transform.position - new Vector3(0f, GetComponent<Collider2D>().bounds.extents.y + jumpCheckOffset, transform.position.z);
         isGrounded = Physics2D.Raycast(startOffset, -Vector3.up, 0.05f);
-        
+
         // Direction Calculation
         Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb.position).normalized;
-        Vector2 force = direction * speed * Time.deltaTime;
+        Vector2 force = direction * speed;
 
         // Jump
-        if (jumpEnabled && isGrounded)
+        if (jumpEnabled && isGrounded && !isInAir && !isOnCoolDown)
         {
             if (direction.y > jumpNodeHeightRequirement)
             {
-                rb.AddForce(Vector2.up * speed * jumpModifier);
+                if (isInAir) return; 
+                isJumping = true;
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                StartCoroutine(JumpCoolDown());
+
             }
+        }
+        if (isGrounded)
+        {
+            isJumping = false;
+            isInAir = false; 
+        }
+        else
+        {
+            isInAir = true;
         }
 
         // Movement
-        rb.AddForce(force);
+        rb.velocity = new Vector2(force.x, rb.velocity.y);
 
         // Next Waypoint
         float distance = Vector2.Distance(rb.position, path.vectorPath[currentWaypoint]);
@@ -118,5 +136,12 @@ public class EnemyAI : MonoBehaviour
             path = p;
             currentWaypoint = 0;
         }
+    }
+
+    IEnumerator JumpCoolDown()
+    {
+        isOnCoolDown = true; 
+        yield return new WaitForSeconds(1f);
+        isOnCoolDown = false;
     }
 }

@@ -205,6 +205,36 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &200444920
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 200444921}
+  m_Layer: 0
+  m_Name: NoStick
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &200444921
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 200444920}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.9092549, y: 0.41055226, z: -7.7056723}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -1624,6 +1654,7 @@ GameObject:
   - component: {fileID: 734747954}
   - component: {fileID: 734747957}
   - component: {fileID: 734747956}
+  - component: {fileID: 734747958}
   m_Layer: 9
   m_Name: enemy
   m_TagString: Untagged
@@ -1728,16 +1759,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1986359375}
-  activateDistance: 100
+  activateDistance: 50
   pathUpdateSeconds: 0.5
-  speed: 1400
+  speed: 5
+  jumpForce: 10
   nextWaypointDistance: 3
-  jumpNodeHeightRequirement: 0.8
+  jumpNodeHeightRequirement: 0
   jumpModifier: 0.1
-  jumpCheckOffset: 1.92
+  jumpCheckOffset: 1
   followEnabled: 1
   jumpEnabled: 1
+  isJumping: 0
+  isInAir: 0
   directionLookEnabled: 1
+  startOffset: {x: 0, y: 0, z: 0}
 --- !u!50 &734747955
 Rigidbody2D:
   serializedVersion: 4
@@ -1789,7 +1824,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1
   drawGizmos: 1
-  detailedGizmos: 0
+  detailedGizmos: 1
   startEndModifier:
     addPoints: 0
     exactStartPoint: 3
@@ -1803,6 +1838,18 @@ MonoBehaviour:
   tagPenalties: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   graphMask:
     value: -1
+--- !u!114 &734747958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 734747950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db9d27bcdb4d61d4c9db29ae4bf37df4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1099139029
 GameObject:
   m_ObjectHideFlags: 0
@@ -2166,4 +2213,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 6
-  jumpHeight: 30
+  jumpHeight: 20
